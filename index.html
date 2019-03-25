@@ -1,9 +1,106 @@
+
 <!DOCTYPE html>
-<html>
-<body>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Chat</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.3/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+            <style>
+            body{
+                margin: 0px;
+                padding: 0px;
+                background: url(imagen/chat.jpg);
+                background-size: cover;
+                font-family: sans-serif;
+            }
+            .formulario{
+                position: absolute;
+                top: 50%;
+                left:50%;
+                transform: translate(-50%,-50%);
+                width: 400px;
+                height: 550px;
+                padding: 80px 40px;
+                box-sizing: border-box;
+                background: rgb(120, 120, 211);
+                }
+            .usuario{
+                width: 90px;
+                height: 90px;
+                border-radius: 50%;
+                overflow: hidden;
+                position: absolute;
+                top: calc(-90px/2);
+                left: calc(50% - 50px);
+            }
+            h3{
+                margin: 0px;
+                padding: 0 0 20px;
+                color: rgb(128, 93, 20);
+                text-align: center;
+            }
+            .formulario p{
+                margin: 0px;
+                padding: opx;
+                font-weight: bold;
+                color: azure;
+            }
+            .formulario input{
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            .formulario input[type="text"],
+            .formulario input[type="password"],{
+                border: none;
+                border-bottom: 1px solid #fff;
+                background: transparent;
+                outline: none;
+                height: 40px;
+                color: #fff;
+                font-size: 16px;
+            }
+            ::placeholder{
+                color: rgba(150, 133, 133, 0.5);
+            }
+            .formulario input[type="submit"]{
+                border: 0px;
+                outline: opx;
+                height: 40px;
+                color: #fff;
+                font-size: 16px;
+                background: rgb(224, 73, 13);
+                cursor: pointer;
+                border-radius: 20px;
+            }
+            .formulario input[type="submit"]:hover{
+                background: rgb(199, 149, 42);
+                color: aqua;
+            }
+            </style>
+    </head>
+    <body>
+        <div class="formulario">
+            <img src="imagen/usuario.jpg" alt="usuario" class="usuario">
+            <h3>Ingrese sus datos</h3>
+            <form>
+                <p>Correo</p>
+                <input type="text" name="" placeholder="Ingrese su correo aquí">
+                <p>Contraseña</p>
+                <input type="password" name="" placeholder="*********">
+                <input type="submit" name="" value="Ingresar">
+            </form>
+        </div>
 
-<h1>Pagina</h1>
-<p>hola</p>
 
-</body>
+
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Bootstrap JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </body>
 </html>
