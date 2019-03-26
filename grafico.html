@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Grafico</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart', 'controls']});
+      google.charts.setOnLoadCallback(drawDashboard);
+      function drawDashboard() {
+        var data = google.visualization.arrayToDataTable([
+          ['Periodo', 'Almacen', 'Gana'],
+          ['201901' , 500, 400],
+          ['201902', 700, 500],
+          ['201903', 300, 600],
+          ['201904', 200, 400],
+          ['201905', 600, 700],
+          ['201906', 100, 300],
+          ['201907', 800, 900]
+        ]);
+        var dashboard = new google.visualization.Dashboard(
+            document.getElementById('dashboard_div'));
+        var donutRangeSlider = new google.visualization.ControlWrapper({
+          'controlType': 'CategoryFilter',
+          'containerId': 'filter_div',
+          'options': {
+            'filterColumnLabel': 'Periodo'
+          }
+        });
+        var pieChart = new google.visualization.ChartWrapper({
+          'chartType':'AreaChart',
+          'containerId': 'chart_div',
+          'options': {
+            'title': 'Motivation and Energy Level Throughout the Day',
+            'width': 600,
+            'height': 500,
+            'pieSliceText': 'value',
+            'legend': 'right'
+          }
+        });
+        var tablaChart = new google.visualization.ChartWrapper({
+          'chartType':'Table',
+          'containerId': 'tabla_div',
+          'options': {
+          'pieSliceText': 'value',
+            }
+        });
+        dashboard.bind(donutRangeSlider, pieChart);
+        dashboard.bind(donutRangeSlider, tablaChart);
+        dashboard.draw(data);
+      }
+    </script>
+  </head>
+
+  <body>
+      <div id="dashboard_div"><br>
+      <div id="filter_div"></div>
+      <div class="container-fluid">
+      <div class="row">
+      <div class="col-sm-6">
+      <div id="chart_div"></div>
+      </div>
+      <div class="col-sm-6">
+      <div id="tabla_div"></div>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>

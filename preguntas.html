@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Preguntas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css">
+    <script src="main.js"></script>
+    <script src="https://code.jquery.com/jquery.js"></script>
+</head>
+<body>
+    <h1>Ejemplo de trivial sencillo programado con Javascript</h1>
+	<div id="pregunta"></div>
+	<div id="respuestas"></div>
+
+<input type="button" value="a ver si acerté" onclick="comprobar()">
+	<script>
+		var preguntas = [
+		"¿Quien descubrió América?",
+		"¿Quién es el mayor superheroe de todos los tiempos?",
+		"¿Por qué lo pájaros pían?"
+		];
+		var respuestas = [
+		["Colón", "El Fari", "Yo mismo", "Tú"],
+		["Spiderman", "Batman", "Yo mismo", "Tú mismo"],
+		["Tienen hambre", "Tienen frío", "Están contentos", "Están tristes"]
+		];
+jugar();
+		var indicie_respuesta_correcta;
+function jugar(){
+			var indice_aleatorio = Math.floor(Math.random()*preguntas.length);
+		var respuestas_posibles = respuestas[indice_aleatorio];
+		var posiciones = [0,1,2,3];
+		var respuestas_reordenadas = [];
+		var ya_se_metio = false;
+		for(i in respuestas_posibles){
+			var posicion_aleatoria = Math.floor(Math.random()*posiciones.length);
+			if(posicion_aleatoria==0 && ya_se_metio == false){
+				indicie_respuesta_correcta =i;
+				ya_se_metio = true;
+			}
+			respuestas_reordenadas[i] = respuestas_posibles[posiciones[posicion_aleatoria]];
+			posiciones.splice(posicion_aleatoria, 1);
+		}
+		var txt_respuestas="";
+		for(i in respuestas_reordenadas){
+			txt_respuestas += '<input type="radio" name="pp" value="'+i+'"><label>'+respuestas_reordenadas[i]+'</label><br>';
+		}
+		document.getElementById("respuestas").innerHTML = txt_respuestas;
+		document.getElementById("pregunta").innerHTML = preguntas[indice_aleatorio];
+}
+function comprobar(){
+	var respuesta = $("input[type=radio]:checked").val();
+	if(respuesta ==indicie_respuesta_correcta){
+		alert("que bien!");
+	}else{
+		alert("me tiro por un puente");
+	}
+	jugar();
+}
+	</script>
+</body>
+</html>
