@@ -3,37 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AFGD</title>
 <meta name="title" content="AFGD">
 <meta name="description" content="Andrés Felipe Guevara Diaz"> 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 <style>
-.jumbotron{background:red;}
+.jumbotron{background:red; padding: 10px; border: 1px}
+#ConsultasSQL{width: 600px;padding-left: 0px;}
 </style>
 <script language="JavaScript">
 </script>
 </head>
 </body>
-<div class="jumbotron text-center">
-<h1>Access y Aplicaciones</h1>
-<p>Esparamos que encuentres todo lo que necesitas</p> 
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>                        
+        </button>
+        <h2 class="blockquote-footer">Access y Aplicaciones</h2>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#VBA">VBA</a></li>
+          <li><a href="#services">SERVICES</a></li>
+          <li><a href="#portfolio">PORTFOLIO</a></li>
+          <li><a href="#pricing">PRICING</a></li>
+          <li><a href="#contact">CONTACT</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container-fluid" id="VBA">
+<h3>Funciones con VBA</h3>
+
 </div>
+<div class="container">
+  <h3>Consultas con SQL temporal</h3>
+  <p class="blockquote-footer">Creacion de consultas para solo ejecutarla.</p>
+<div class="container text-left">
+  <div class="row"  id="ConsultasSQL">
+  <pre><code>
+    Public Function Consulta()
+    On Error GoTo error
+    Dim SQL As String
+    DoCmd.SetWarnings False
+    SQL = "SELECT * FROM origen"
+    DoCmd.RunSQL SQL
+    Exit Function
+    error:
+    MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+    End Function
+   </pre></code>
+</div></div></div>
+<div class="container">
+    <h3>Consultas con SQL</h3>
+    <p class="blockquote-footer">Creacion de consultas para la creación y eliminación posterior.</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+        Public Function Consultasaldosmenoressafixplano()
+        On Error GoTo error
+        Dim SQL As String
+        Dim db As DAO.Database
+        Dim qdef As DAO.QueryDef
+        Set db = CurrentDb
+        SQL = "SELECT * FROM tabla"
+        Set qdef = db.CreateQueryDef("Consulta", SQL)
+        DoCmd.OpenQuery "Consulta", acNormal, acReadOnly
+        qdef.Close
+        db.QueryDefs.Delete "Consulta"
+        db.Close
+        Set qdef = Nothing
+        Set db = Nothing
+        Exit Function
+        error:
+        MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+        End Function
+     </pre></code>
+  </div></div></div>
 
-<ul class="nav nav-tabs"> 
-<li class="nav-item"> 
-<a class="nav-link" href="#">Inicio</a> </li> 
-<li class="nav-item"> 
-<a class="nav-link" href="#">Aplicaciones</a></li> 
-<li class="nav-item"> 
-<a class="nav-link" href="#">VBA</a></li> 
-</ul>
-
-
-<div class="container-fluid" id="VBA">
-<h4>Funciones con VBA</h4>
-<p class="lead">Aplicaciones utiles para la generación de soluciones a traves</p>
-</div>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>
