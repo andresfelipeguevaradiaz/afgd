@@ -58,12 +58,14 @@
     DoCmd.SetWarnings False
     SQL = "SELECT * FROM origen"
     DoCmd.RunSQL SQL
+    DoCmd.RunCommand (acCmdExportExcel)
     Exit Function
     error:
     MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
     End Function
    </pre></code>
 </div></div></div>
+
 <div class="container">
     <h3>Consultas con SQL</h3>
     <p class="blockquote-footer">Creacion de consultas para la creación y eliminación posterior.</p>
@@ -79,6 +81,7 @@
         SQL = "SELECT * FROM tabla"
         Set qdef = db.CreateQueryDef("Consulta", SQL)
         DoCmd.OpenQuery "Consulta", acNormal, acReadOnly
+        DoCmd.RunCommand (acCmdExportExcel)
         qdef.Close
         db.QueryDefs.Delete "Consulta"
         db.Close
@@ -90,6 +93,1558 @@
         End Function
      </pre></code>
   </div></div></div>
+
+<div class="container">
+    <h3>Consultas en cuadros combinados</h3>
+    <p class="blockquote-footer">consultas para un cuadro combinado</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Corte_Fecha_GotFocus()
+      Me.Corte_Fecha.RowSource = "SELECT FECHAINI FROM Estadosaldos GROUP BY FECHAINI"
+      Me.Corte_Fecha.Requery
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Refrescar formulario</h3>
+    <p class="blockquote-footer">Refrescar un formulario</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Comando107_Click()
+      DoCmd.RunCommand acCmdRefreshPage
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Abrir una base de datos</h3>
+    <p class="blockquote-footer">Abrir base de daros desde otra base de datos</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Comando99_Click()
+      Const Operaciones As String = "C:\Users\Public\Documents\Tablas operaciones\Historicotransaccionescore.accdb"
+      Application.FollowHyperlink (Operaciones)
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Maximizar formulario</h3>
+    <p class="blockquote-footer">Maximizar formulario</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Max_Click()
+      DoCmd.ShowToolbar "Ribbon", acToolbarNo
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Minimizar formulario</h3>
+    <p class="blockquote-footer">Maximizar formulario</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Min_Click()
+      DoCmd.ShowToolbar "Ribbon", acToolbarYes
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Ocultar panel de explorador</h3>
+    <p class="blockquote-footer">Ocultar panel de explorador</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Ocultar_Click()
+      On Error Resume Next
+      Access.Application.DoCmd.SelectObject acForm, Me.Name, True
+      Access.Application.DoCmd.RunCommand acCmdWindowHide
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Cargar archivo de texto con encabezados</h3>
+    <p class="blockquote-footer">Cargar archivo de texto con encabezados</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Cargar_Click()
+      Dim Especificacion As String
+      Especificacion = Me.Tabla
+      DoCmd.TransferText acImportDelim, Especificacion, Left(Me.Tabla, Len(Me.Tabla) - 5), Me.Ubicacion, True
+      Me.Ubicacion = Null
+      Me.Tabla = Null
+      DoCmd.Restore
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Cargar archivo de texto sin encabezados</h3>
+    <p class="blockquote-footer">Cargar archivo de texto sin encabezados</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Cargarsinencabezado_Click()
+      Dim Especificacion As String
+      Especificacion = Me.Tabla
+      DoCmd.TransferText acImportDelim, Especificacion, Left(Me.Tabla, Len(Me.Tabla) - 5), Me.Ubicacion, False
+      Me.Ubicacion = Null
+      Me.Tabla = Null
+      DoCmd.Restore
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Vincular archivo de texto</h3>
+    <p class="blockquote-footer">Vincular archivo de texto</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Comando38_Click()
+      DoCmd.TransferText acLinkDelim, "EECCHistorico", Me.TextoEECC, Me.Ubicacion, False
+      Me.Ubicacion = Null
+      Me.TextoEECC = Null
+      DoCmd.Restore
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Exportar a un archivo de texto</h3>
+    <p class="blockquote-footer">Exportar a un archivo de texto</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Exportararchivo_Click()
+      On Error GoTo error
+      Dim SQL As String
+      Dim db As DAO.Database
+      Dim qdef As DAO.QueryDef
+      Set db = CurrentDb
+      SQL = "SELECT Archivotexto FROM Archivotexto WHERE Archivotexto like '*" & Me.Texto & "*'"
+      Set qdef = db.CreateQueryDef("Consultaarchivotexto", SQL)
+      DoCmd.OpenQuery "Consultaarchivotexto", acNormal, acReadOnly
+      DoCmd.RunCommand (acCmdExportText)
+      qdef.Close
+      db.QueryDefs.Delete "Consultaarchivotexto"
+      db.Close
+      Set qdef = Nothing
+      Set db = Nothing
+      Exit Sub
+      error:
+      MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Cargar archivo texto a una tabla generica</h3>
+    <p class="blockquote-footer">Cargar archivo texto a una tabla generica<</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Cargararchivos_Click()
+      On Error GoTo error
+      Dim numero As Integer
+      Dim Texto As String
+      Dim Archivotexto As String
+      Dim SQL As String
+      DoCmd.SetWarnings False
+      SQL = "DELETE Archivotexto.* FROM Archivotexto"
+      DoCmd.RunSQL SQL
+      numero = FreeFile
+      Open Me.Ubicacion For Input As numero
+      While Not EOF(numero)
+      Line Input #numero, Archivotexto
+      CurrentDb.Execute ("INSERT INTO Archivotexto VALUES ('" & Archivotexto & "')")
+      Wend
+      Close #numero
+      Me.Archivotexto.RowSource = "SELECT Archivotexto FROM Archivotexto"
+      DoCmd.Close acForm, "procesando", acSaveNo
+      Exit Sub
+      error:
+      If Err.Number = 94 Then
+      DoCmd.Close acForm, "procesando", acSaveNo
+      Else
+      DoCmd.Close acForm, "procesando", acSaveNo
+      MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+      End If
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Chat</h3>
+    <p class="blockquote-footer">Chat</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Chat__Click()
+      On Error GoTo error
+      Dim bd As DAO.Database
+      Dim RegistroChat As DAO.Recordset
+      If IsNull(Me.GruposAbiertos) Then
+      MsgBox "Debe seleccionar un grupo de chat", vbCritical, "Atención"
+      Exit Sub
+      If IsNull(Me.TextoChat) Then
+      MsgBox "Debe ingresar algun texto", vbCritical, "Atención"
+      Exit Sub
+      End If
+      End If
+      Set bd = CurrentDb
+      Set RegistroChat = bd.OpenRecordset("Chat")
+      RegistroChat.AddNew
+      RegistroChat!IdChat = Me.GruposAbiertos
+      RegistroChat!Fecha = Date
+      RegistroChat!Hora = Time
+      RegistroChat!TextoChat = Me.TextoChat
+      RegistroChat!Adjunto = Nz(Me.Archivo, "")
+      RegistroChat.Update
+      RegistroChat.Close
+      Set RegistroChat = Nothing
+      DoCmd.RunCommand acCmdRefreshPage
+      Me.TextoChat = Nothing
+      Me.Archivo = Nothing
+      error:
+      MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+      End Sub
+
+      Private Sub Conexionchat_Click()
+      Dim bd As DAO.Database
+      Dim Registro As DAO.Recordset
+      Set bd = CurrentDb
+      Set Registro = bd.OpenRecordset("ConexionesChat")
+      Registro.AddNew
+      Registro!Activado = True
+      Registro.Update
+      Registro.Close
+      Set Registro = Nothing
+      DoCmd.RunCommand acCmdRefreshPage
+      End Sub
+
+      Private Sub Creargrupo_Click()
+      On Error GoTo error
+      Dim bd As DAO.Database
+      Dim Grupo As DAO.Recordset
+      If IsNull(Me.IdChat) Then
+      MsgBox "Debe seleccionar una conexión de chat", vbCritical, "Atención"
+      Exit Sub
+      ElseIf IsNull(Me.Usuarios) Then
+      MsgBox "Debe seleccionar un usuario", vbCritical, "Atención"
+      Exit Sub
+      End If
+      Set bd = CurrentDb
+      Set Grupo = CurrentDb.OpenRecordset("GruposChat")
+      Grupo.AddNew
+      Grupo!IdChat = Me.IdChat
+      Grupo!FechaCreacion = Date
+      Grupo!Usuarios = Me.Usuarios
+      Grupo!Remite = Me.usuario
+      Grupo.Update
+      Grupo.Close
+      Set Grupo = Nothing
+      DoCmd.RunCommand acCmdRefreshPage
+      Exit Sub
+      error:
+      MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+      End Sub
+
+      Private Sub Eliminar_Usuario_Click()
+      On Error GoTo error
+      Dim SQL As String
+      Dim Aplicacion As Access.Application
+      SQL = "Delete Gruposchat.IdChat" _
+      & " From Gruposchat" _
+      & " WHERE (((Gruposchat.IdChat)=[Formularios]![Chat]![GruposAbiertos]))"
+      DoCmd.SetWarnings False
+      DoCmd.RunSQL SQL
+      Me.IdChat = Null
+      DoCmd.RunCommand acCmdRefreshPage
+      Exit Sub
+      error:
+      MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+      End Sub
+
+      Private Sub EliminarConexionchat_Click()
+      On Error GoTo error
+      Dim SQL As String
+      Dim Aplicacion As Access.Application
+      SQL = "Delete Conexioneschat.IdChat" _
+      & " From Conexioneschat" _
+      & " WHERE (((Conexioneschat.IdChat)=[Formularios]![Chat]![IdChat]))"
+      DoCmd.SetWarnings False
+      DoCmd.RunSQL SQL
+      Me.IdChat = Null
+      DoCmd.RunCommand acCmdRefreshPage
+      Exit Sub
+      error:
+      MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+      End Sub
+      
+      Private Sub Enviar_Click()
+      On Error GoTo error
+      Dim bd As DAO.Database
+      Dim RegistroChat As DAO.Recordset
+      If IsNull(Me.GruposAbiertos) Then
+      MsgBox "Debe seleccionar un grupo de chat", vbCritical, "Atención"
+      Exit Sub
+      ElseIf IsNull(Me.TextoChat) Then
+      MsgBox "Debe ingresar algun texto", vbCritical, "Atención"
+      Exit Sub
+      End If
+      Set bd = CurrentDb
+      Set RegistroChat = bd.OpenRecordset("Chat")
+      RegistroChat.AddNew
+      RegistroChat!IdChat = Me.GruposAbiertos
+      RegistroChat!Remite = Me.usuario
+      RegistroChat!Fecha = Date
+      RegistroChat!Hora = Time
+      RegistroChat!TextoChat = Me.TextoChat
+      RegistroChat!Adjunto = Nz(Me.Archivo, "")
+      RegistroChat.Update
+      RegistroChat.Close
+      Set RegistroChat = Nothing
+      DoCmd.RunCommand acCmdRefreshPage
+      [Forms]![Chat]![TextoChat] = Nothing
+      [Forms]![Chat]![Archivo] = Nothing
+      Exit Sub
+      error:
+      MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+      End Sub
+
+      Public Function Mensajeschat()
+On Error GoTo error
+DoCmd.OpenForm "Procesando"
+Dim SQL As String
+Dim db As DAO.Database
+Dim qdef As DAO.QueryDef
+Dim Hora As Date
+Dim Tiempopopup As Date
+Dim Mensaje As String
+Set db = CurrentDb
+SQL = "SELECT DISTINCTROW Last(Chat.IdChat) AS IdChat, Last(Chat.Remite) AS Remite, Last(Chat.Fecha) AS Fecha, Last(Chat.Hora) AS Hora, Last(GruposChat.Usuarios) AS Usuarios, Last(Chat.TextoChat) AS TextoChat" _
+& " FROM GruposChat INNER JOIN Chat ON GruposChat.IdChat = Chat.IdChat" _
+& " HAVING (((Last(Chat.Remite))<>[Formularios]![Panelprincipal]![usuario]))" _
+
+Set qdef = db.CreateQueryDef("Consulta", SQL)
+Hora = Nz((DLookup("[Hora]", "Consulta")), 0)
+Tiempopopup = (Time - 0.00347)
+Mensaje = Nz((DLookup("[TextoChat]", "Consulta")), 0)
+If Hora >= Tiempopopup Then
+MsgBox "Tienes un mensaje " & Chr(10) & Hora & Mensaje, vbQuestion, "Tienes un mensaje de chat"
+End If
+DoCmd.Close acQuery, "Consulta", acSaveNo
+qdef.Close
+db.QueryDefs.Delete "Consulta"
+db.Close
+Set qdef = Nothing
+Set db = Nothing
+DoCmd.Close acForm, "procesando", acSaveNo
+Exit Function
+error:
+DoCmd.Close acForm, "procesando", acSaveNo
+MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+End Function
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Buscar coincidencias</h3>
+    <p class="blockquote-footer">Buscar coincidencias</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Busccar_Click()
+      Dim SQL As String
+         SQL = "SELECT Consultaclientessegurosvoluntarios.* " _
+           & "FROM Consultaclientessegurosvoluntarios " _
+           & "WHERE Número_identificacion LIKE '*" & Me.Número_identificacion & "*'" _
+           & "AND Cuenta_cliente LIKE '*" & Me.Cuenta_cliente & "*'" _
+           & "AND Apellidos_nombres_cliente LIKE '*" & Me.Apellidos_nombres_cliente & "*'" _
+           & "AND Nombre_producto_seguro LIKE '*" & Me.Nombre_producto_seguro & "*'" _
+           & "AND Plan_seguro LIKE '*" & Me.Plan_seguro & "*'"
+          Me.Consultaclientessegurosvoluntarios.RowSource = SQL
+      Me.Consultaclientessegurosvoluntarios.Requery
+  End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas tipo arbol</h3>
+    <p class="blockquote-footer">Consultas tipo arbol</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+        Modulo
+
+        Public Const Sangriamas As Long = 10
+        Public Const strSeparador As String = "."
+        Public Nohayerrores As Boolean
+        Public Const Sangria As Long = 10, _
+                     Separador As String = "."
+        
+        Public Function Nivel(strCodigo As String, strSeparador As String) As Long
+        Dim lngCuenta As Long, _
+            i As Long
+        
+        If Len(strSeparador) > 1 Then
+           MsgBox "El separador no puede contener mas de un dígito, verficalo", vbOKOnly + vbCritical, "Separador incorrecto"
+           Exit Function
+        End If
+        
+        For i = 1 To Len(strCodigo)
+           If Mid$(strCodigo, i, 1) = strSeparador Then lngCuenta = lngCuenta + 1
+        Next i
+        
+        Nivel = lngCuenta
+        End Function         ' Nivel
+        Public Function Nivelplus(strCodigo As String, strSeparador As String) As Long
+        Dim lngCuenta As Long, i As Long
+        
+        If Len(strSeparador) > 1 Then
+           MsgBox "El separador no puede contener mas de un dígito, verficalo", vbOKOnly + vbCritical, "Separador incorrecto"
+           Exit Function
+        End If
+        
+        For i = 1 To Len(strCodigo)
+           If Mid$(strCodigo, i, 1) = strSeparador Then lngCuenta = lngCuenta + 1
+        Next i
+        
+        Nivelplus = lngCuenta
+        End Function         ' Nivel
+        
+
+      Private Sub cmdBuscar_Click()
+      Dim Matriz() As String, _
+          i As Long, _
+          j As Long, _
+          blnHayCoincidentes As Boolean, _
+          strRama As String, _
+          lngPosicion As Long, _
+          strCodigoAnterior As String, _
+          strPrimero As String
+      On Error GoTo txtBuscar_AfterUpdate_TratamientoErrores
+      ' Si el cuadro de texto buscar está vacío salgo sin hacer nada
+      If Nz(Me.txtBuscar, vbNullString) = vbNullString Then Exit Sub
+      'Si no lo está:
+      Me.lstArbol.RowSource = vbNullString
+      blnHayCoincidentes = True
+      ' busco en la tabla los registros que cumplen con la condición
+      strSQL = "SELECT Codigo"
+      strSQL = strSQL & " FROM tblAyuda"
+      strSQL = strSQL & " WHERE InStr([Descripcion], '" & Me.txtBuscar & "') > 0"
+      strSQL = strSQL & " ORDER BY Codigo"
+      Set rst = CurrentDb.OpenRecordset(strSQL, dbOpenSnapshot, dbReadOnly)
+      ' meto en una matriz todos los códigos cuya descripción contenga el texto buscado
+      If Not (rst.BOF And rst.EOF) Then
+         Do Until rst.EOF
+            ReDim Preserve Matriz(i)
+            Matriz(i) = rst!Codigo
+            i = i + 1
+            rst.MoveNext
+         Loop
+      Else
+         blnHayCoincidentes = False
+      End If
+      ' inserto el nivel 0
+      strSQL = "SELECT Codigo, Descripcion AS Descrip, Nivelplus([Codigo], '" & strSeparador & "') AS Nivel"
+      strSQL = strSQL & " FROM tblAyuda"
+      strSQL = strSQL & " WHERE Nivelplus([Codigo], '" & strSeparador & "') = 0" & vbNewLine
+      ' utilizo una consulta de unión en lugar de multiples consultas porque está me evitará
+      ' insertar registros duplicados en el árbol
+      If blnHayCoincidentes Then
+         ' resto de registros aparecidos en la búsqueda:
+         ' he mostrar los registros que contienen el texto buscado
+         For i = 0 To UBound(Matriz)
+            strSQL = strSQL & "UNION" & vbNewLine
+            strSQL = strSQL & "SELECT Codigo, '" & "' & Descripcion  AS Descrip, Nivelplus([Codigo], '" & strSeparador & "') AS Nivel"
+            strSQL = strSQL & " FROM tblAyuda"
+            strSQL = strSQL & " WHERE [Codigo] = '" & Matriz(i) & "'"
+            strSQL = strSQL & vbNewLine
+            ' y por fin todos los registros que componen la rama de los coincidentes,
+            ' lo que hago descuartizando el código según la posición del separador
+            For j = 1 To Nivelplus(Matriz(i), strSeparador) '- 1
+               lngPosicion = InStr(lngPosicion + 1, Matriz(i), strSeparador)
+               If lngPosicion Then
+                  strSQL = strSQL & "UNION" & vbNewLine
+                  strSQL = strSQL & "SELECT Codigo, Descripcion AS Descrip, Nivelplus([Codigo], '" & strSeparador & "') AS Nivel"
+                  strSQL = strSQL & " FROM tblAyuda"
+                  strSQL = strSQL & " WHERE [Codigo] = '" & Left$(Matriz(i), lngPosicion - 1) & "'"
+                  strSQL = strSQL & vbNewLine
+               End If
+            Next j
+         Next i
+      End If
+      ' ordeno por código para que el árbol sea coherente
+      strSQL = strSQL & "ORDER BY Codigo"
+      'Debug.Print strSQL
+      Set rst = CurrentDb.OpenRecordset(strSQL, dbOpenSnapshot)
+      
+      If Not (rst.BOF And rst.EOF) Then
+         i = 0
+         Do Until rst.EOF
+            ' para evitar incluir los registros coincidentes duplicados comparo cada
+            ' registro a insertar con el anterior ya insertado en el árbol
+            If Not strCodigoAnterior = rst!Codigo Then
+               ' me quedo con el código del primer registro coincidente para luego seleccionarlo
+               If strPrimero = vbNullString And InStr(rst!Descrip, Me.txtBuscar) > 0 Then strPrimero = rst!Codigo
+               ' salvo en el primer nivel construyo el texto de la "rama"
+               If Not rst!Nivel = 0 Then
+                  If Nz(DLookup("TextoAyuda", "tblAyuda", "Codigo='" & rst!Codigo & "'"), "") = "" Then
+                     strRama = Space$(Nivelplus(rst!Codigo, strSeparador) * Sangriamas) & "+ "
+                  Else
+                     strRama = Space$(Nivelplus(rst!Codigo, strSeparador) * Sangriamas) & "- "
+                  End If
+               Else
+                  strRama = "+ "
+               End If
+               ' añado el registro al cuadro de lista
+               Me.lstArbol.AddItem Item:="'" & rst!Codigo & "';'" & strRama & rst!Descrip & "';" & rst!Nivel, Index:=i
+               i = i + 1
+            End If
+            strCodigoAnterior = rst!Codigo
+            rst.MoveNext
+         Loop
+      End If
+      If blnHayCoincidentes Then
+          ' selecciono el primer registro coincidente
+          Me.lstArbol = strPrimero
+          ' Muestro en el cuadro de ayuda el contenido de la misma, si estás en el último nivel
+          Me.txtAyuda = Nz(DLookup("TextoAyuda", "tblAyuda", "Codigo='" & CStr(Me.lstArbol.column(0)) & "'"), "")
+      Else
+          MsgBox "No se devolvió ningún resultado para '" & Me.txtBuscar & "'. " _
+              & vbCrLf & "Pruebe con otro término.", vbInformation, "SIN DATOS"
+          Me.txtBuscar = vbNullString
+      End If
+      txtBuscar_AfterUpdate_Salir:
+          If Not rst Is Nothing Then
+              rst.Close
+              Set rst = Nothing
+          End If
+          Exit Sub
+      txtBuscar_AfterUpdate_TratamientoErrores:
+          MsgBox "Se ha producido el error " & Err.Number & " - " & Err.Description, vbExclamation, "ERROR"
+          Resume txtBuscar_AfterUpdate_Salir
+      End Sub
+
+      Private Sub cmdCerrar_Click()
+          DoCmd.Close acForm, Me.Name
+      End Sub
+
+      Private Sub Form_Load()
+      On Error GoTo Form_Load_TratamientoErrores
+      'Empieza el rellenado del "árbol"
+      Me.lstArbol.RowSource = vbNullString
+      Me.lstArbol.AllowValueListEdits = False  'Impide la edición del cuadro de lista
+      ' Cargo el cuadro de lista con el nivel 0 ("Los Epígrafes")
+      strSQL = "SELECT Codigo, Descripcion AS Descrip, Nivelplus([Codigo], '" & strSeparador & "') AS Nivel"
+      strSQL = strSQL & " FROM tblAyuda"
+      strSQL = strSQL & " WHERE Nivelplus([Codigo], '" & strSeparador & "') = 0"
+      strSQL = strSQL & " ORDER BY Codigo"
+      Set rst = CurrentDb.OpenRecordset(strSQL, dbOpenSnapshot)
+      If Not (rst.EOF And rst.BOF) Then
+         Do Until rst.EOF
+            Me.lstArbol.AddItem Item:="'" & rst!Codigo & "';'" & "+ " & rst!Descrip & "';" & rst!Nivel
+            rst.MoveNext
+         Loop
+      End If
+      ' Selecciono el primer registro
+      Me.lstArbol = 0
+      
+      Form_Load_Salir:
+          If Not rst Is Nothing Then
+              rst.Close
+              Set rst = Nothing
+          End If
+          Exit Sub
+         
+      Form_Load_TratamientoErrores:
+         MsgBox "Se ha producido el error " & Err.Number & " - " & Err.Description
+         Resume Form_Load_Salir
+      End Sub
+
+      Private Sub lstArbol_Click()
+      ' Muestro en el cuadro de ayuda el contenido de la misma, si estás en el 3er nivel
+      Me.txtAyuda = Nz(DLookup("TextoAyuda", "tblAyuda", "Codigo='" & CStr(Me.lstArbol.column(0)) & "'"), "")
+      End Sub
+      Private Sub lstArbol_DblClick(Cancel As Integer)
+      Dim lngPosicion As Long, _
+          i As Long, _
+          strCodigo As String, _
+          strDescripcion As String, _
+          lngNivel As Long, _
+          blnExpandido As Boolean, _
+          strRama As String
+      On Error GoTo lstArbol_DblClick_TratamientoErrores
+      ' para mayor legibilidad del código meto los datos del registro seleccionados en variables
+      'lngPosicion = Me.lstArbol.ListIndex
+      'strCodigo = Me.lstArbol.Column(0)
+      'strDescripcion = Me.lstArbol.Column(1)
+      'lngNivel = Me.lstArbol.Column(2)
+      'blnExpandido = IIf(Left(Trim(Me.lstArbol.Column(1)), 1) = "+", False, True)
+      lngPosicion = Me.lstArbol.ListIndex
+      strCodigo = Me.lstArbol.column(0)
+      strDescripcion = Me.lstArbol.column(1)
+      lngNivel = Me.lstArbol.column(2)
+      blnExpandido = IIf(Left(Trim(Me.lstArbol.column(1)), 1) = "+", False, False)
+      ' si la rama no está expandida añado al cuadro de lista los registros del siguiente nivel de esa rama
+      If Not blnExpandido Then
+         ' expando la rama
+         ' dado que no puedo cambiar el valor de una columna en tiempo de ejecución,
+         ' duplico el registro cambiando su estado a expandido
+         Me.lstArbol.AddItem Item:="'" & strCodigo & "';'" & Replace(strDescripcion, "+", "-") & "';" & lngNivel, Index:=lngPosicion
+         ' elimino el antiguo registro que acabo de duplicar (el marcado como no expandido)
+         Me.lstArbol.RemoveItem lngPosicion + 1
+      '=========================================================================================
+         ' como medida de precaución, y para evitar que se dupliquen ramas si se ha realizado
+         ' una búsqueda, elimino los registros de esa rama por debajo del nivel seleccionado
+         For i = Me.lstArbol.ListCount - 1 To lngPosicion + 1 Step -1
+            ' si el código empieza igual que el registro seleccionado lo elimino
+            If InStr(Me.lstArbol.column(0, i), strCodigo) = 1 Then
+               Me.lstArbol.RemoveItem i
+            End If
+         Next i
+      '=========================================================================================
+         ' abro un recordset con los registros del siguiente nivel
+         strSQL = "SELECT Codigo, Descripcion, Nivelplus([Codigo], '" & strSeparador & "') AS Nivel"
+         strSQL = strSQL & " FROM tblAyuda"
+         strSQL = strSQL & " WHERE Nivelplus([Codigo], '" & strSeparador & "') = " & lngNivel + 1
+         strSQL = strSQL & " AND Codigo LIKE '" & Me.lstArbol & "*'"
+         strSQL = strSQL & " ORDER BY Codigo"
+      '   Debug.Print strSQL
+         Set rst = CurrentDb.OpenRecordset(strSQL, dbOpenSnapshot)
+         ' cargo el cuadro de lista con esos registros
+         If Not (rst.EOF And rst.BOF) Then
+            Do Until rst.EOF
+               lngPosicion = lngPosicion + 1
+               ' construyo la "rama": los espacios correspondientes a ese nivel
+               ' mas la "rama" propiamente dicha y un espacio para no pegarme al texto
+               If Nz(DLookup("TextoAyuda", "tblAyuda", "Codigo='" & rst!Codigo & "'"), "") = "" Then
+                  strRama = Space$(Nivelplus(rst!Codigo, strSeparador) * Sangriamas) & "+ "
+               Else
+                  strRama = Space$(Nivelplus(rst!Codigo, strSeparador) * Sangriamas) & "- "
+               End If
+               Me.lstArbol.AddItem Item:="'" & rst!Codigo & "';'" & strRama & rst!Descripcion & "';" & rst!Nivel, Index:=lngPosicion
+               rst.MoveNext
+            Loop
+         End If
+      Else
+         'Si es la última rama, no hago nada
+         If Not Nz(DLookup("TextoAyuda", "tblAyuda", "Codigo='" & strCodigo & "'"), "") = "" Then
+             'Nada
+         Else
+         ' elimino los registros de esa rama por debajo del nivel seleccionado
+         For i = Me.lstArbol.ListCount - 1 To lngPosicion Step -1
+            ' si el código empieza igual que el registro seleccionado lo elimino
+            If InStr(Me.lstArbol.column(0, i), strCodigo) = 1 Then
+               Me.lstArbol.RemoveItem i
+            End If
+         Next i
+         ' duplico el registro cambiando su estado a encogido
+         Me.lstArbol.AddItem Item:="'" & strCodigo & "';'" & Replace(strDescripcion, "-", "+") & "';" & lngNivel, Index:=lngPosicion
+         End If
+      End If
+      lstArbol_DblClick_Salir:
+          If Not rst Is Nothing Then
+              rst.Close
+              Set rst = Nothing
+          End If
+          Exit Sub
+         
+      lstArbol_DblClick_TratamientoErrores:
+         MsgBox "Se ha producido el error " & Err.Number & " - " & Err.Description
+         Resume lstArbol_DblClick_Salir
+      End Sub        ' lstarbol_DblClick
+      
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Graficos chart</h3>
+    <p class="blockquote-footer">Graficos chart</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Abrir_formulario_Click()
+      Dim rst As DAO.Recordset
+      Dim SQL As String
+      SQL = "SELECT Left([BaserecaudoSAFIX]![Fecha],4) AS Año, Right(Left([BaserecaudoSAFIX]![Fecha],6),2) AS Mes, Sum(CCur(Round([Debito],0))) AS Monto FROM BaserecaudoSAFIX GROUP BY Left([BaserecaudoSAFIX]![Fecha],4), Right(Left([BaserecaudoSAFIX]![Fecha],6),2)"
+      Set rst = CurrentDb.OpenRecordset(SQL)
+      Dim objHTML As Object
+      Dim fso As Scripting.FileSystemObject
+      Dim strHTML As String
+      strHTML = "<html>" & vbCrLf
+      strHTML = "  <head>" & vbCrLf
+      '''''''''''''''''''''''''''''''''''''APLICACION''''''''''''''''''''''''''''''''''''''''''''''
+      strHTML = strHTML & "    <script type=""text/javascript"" src=""https://www.gstatic.com/charts/loader.js""></script>" & vbCrLf
+      strHTML = strHTML & "    <script type=""text/javascript"" src=""https://www.google.com/jsapi""></script>" & vbCrLf
+      strHTML = strHTML & "    <script type=""text/javascript"">" & vbCrLf
+      '''''''''''''''''''''''''''''''''''''PAQUETES''''''''''''''''''''''''''''''''''''''''''''''
+      strHTML = strHTML & "      google.charts.load('visualization', '1', {'packages':['bar']});" & vbCrLf
+      strHTML = strHTML & "      google.charts.setOnLoadCallback(drawStuff);" & vbCrLf
+      strHTML = strHTML & "" & vbCrLf
+      '''''''''''''''''''''''''''''''''''''DATOS''''''''''''''''''''''''''''''''''''''''''''''
+      strHTML = strHTML & "      function drawStuff() {" & vbCrLf
+      strHTML = strHTML & "        var data = new google.visualization.arrayToDataTable([" & vbCrLf
+      strHTML = strHTML & "          ['" & rst(0).Name & "', '" & rst(1).Name & "', '" & rst(2).Name & "']," & vbCrLf
+      rst.MoveFirst
+      Do Until rst.EOF
+      strHTML = strHTML & "          ['" & rst(0) & "','" & rst(1) & "', " & Replace(rst(2), ",", ".") & "]," & vbCrLf
+      rst.MoveNext
+      Loop
+      strHTML = Left(strHTML, Len(strHTML) - 1)
+      strHTML = strHTML & vbCrLf
+      strHTML = strHTML & "        ]);" & vbCrLf
+      strHTML = strHTML & "" & vbCrLf
+      strHTML = strHTML & "        var options = {" & vbCrLf
+      strHTML = strHTML & "          width: 600," & vbCrLf
+      strHTML = strHTML & "          legend: { position: 'none' }," & vbCrLf
+      strHTML = strHTML & "          chart: {" & vbCrLf
+      strHTML = strHTML & "          title: 'Company Performance'," & vbCrLf
+      strHTML = strHTML & "          subtitle: 'Sales, Expenses, and Profit: 2014-2017' }," & vbCrLf
+      strHTML = strHTML & "          axes: {" & vbCrLf
+      strHTML = strHTML & "            x: {" & vbCrLf
+      strHTML = strHTML & "              0: { side: 'top', label: 'White to move'}" & vbCrLf
+      strHTML = strHTML & "            }" & vbCrLf
+      strHTML = strHTML & "          }," & vbCrLf
+      strHTML = strHTML & "          bar: { groupWidth: ""90%"" }" & vbCrLf
+      strHTML = strHTML & "        };" & vbCrLf
+      strHTML = strHTML & "" & vbCrLf
+      strHTML = strHTML & "        var chart = new google.charts.Bar(document.getElementById('top_x_div'));" & vbCrLf
+      strHTML = strHTML & "        chart.draw(data, google.charts.Bar.convertOptions(options));" & vbCrLf
+      strHTML = strHTML & "      };" & vbCrLf
+      strHTML = strHTML & "    </script>" & vbCrLf
+      strHTML = strHTML & "  </head>" & vbCrLf
+      strHTML = strHTML & "  <body>" & vbCrLf
+      strHTML = strHTML & "    <div id=""top_x_div"" style=""width: 800px; height: 600px;""></div>" & vbCrLf
+      strHTML = strHTML & "  </body>" & vbCrLf
+      strHTML = strHTML & "</html>" & vbCrLf
+      
+      '''''''''''''''''''''''''''''''''''''OPCIONES DE GRAFICO''''''''''''''''''''''''''''''''''''''''''''''
+      
+      '''''''''''''''''''''''''''''''''''''CARGAR GRAFICOS''''''''''''''''''''''''''''''''''''''''''''''"
+      '''''''''''''''''''''''''''''''''''''TAMAÑO PAGINA WEB''''''''''''''''''''''''''''''''''''''''''''''
+      
+      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+      '''''''''''''''''''''''''''''''''''''GENERAR HMTL''''''''''''''''''''''''''''''''''''''''''''''
+      Set fso = CreateObject("Scripting.FileSystemObject")
+      Set objHTML = fso.CreateTextFile(Application.CurrentProject.Path & "\index.html", True)
+      objHTML.Write strHTML
+      Me.ExploradorWeb.ControlSource = ""
+      Dim miRuta As String
+      miRuta = Replace(Application.CurrentProject.Path, ":", "$")
+      miRuta = Replace(miRuta, "\", "/")
+      Me.ExploradorWeb.ControlSource = "='file://127.0.0.1/" & miRuta & "/index.html'"
+      Me.ExploradorWeb.Visible = True
+      Salida:
+          If Not rst Is Nothing Then
+              rst.Close
+              Set rst = Nothing
+          End If
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Preparar usuario y contraseña</h3>
+    <p class="blockquote-footer">Preparar usuario y contraseña</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Contraseña_AfterUpdate()
+      If [Forms]![Subformulario Usuarios]![Contraseña] = Me.Contraseña Then
+      DoCmd.OpenForm "panelprincipal"
+      DoCmd.OpenForm "iniciosesion", acNormal, , , acFormReadOnly, acHidden
+      Else
+      MsgBox "Constraseña errada"
+      End If
+      End Sub
+      Private Sub Form_Load()
+      DoCmd.ShowToolbar "Ribbon", acToolbarNo
+      End Sub
+      Private Sub Usuario_AfterUpdate()
+      DoCmd.OpenForm "Subformulario Usuarios", acNormal, , , acFormReadOnly, acHidden
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Navegador de internet</h3>
+    <p class="blockquote-footer">Navegador de internet</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Abrir_en_chrome_Click()
+      Dim URL As String
+      URL = Me.Paginas
+      Shell "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe " & Paginas, vbMaximizedFocus
+      End Sub
+      Private Sub Abrir_programa_Click()
+      Shell Paginas
+      End Sub
+      Private Sub Búscar_Click()
+      Dim Browser As WebBrowser
+      Set Browser = Me.Web.Object
+      Browser.GoSearch
+      Set Browser = Nothing
+      End Sub
+      Private Sub Comando107_Click()
+      DoCmd.RunCommand acCmdRefreshPage
+      Dim Browser As WebBrowser
+      Set Browser = Me.Web.Object
+      Browser.Refresh
+      End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Formulario procesando</h3>
+    <p class="blockquote-footer">Formulario procesando</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+      Private Sub Form_Timer()
+        'Declaramos las variables
+    Static i As Byte
+    Dim ctl As Control
+        'Si el valor de i es cero lo convertimos en 1
+    If i = 0 Then i = 1
+        'Recorremos los rectángulos y vamos cambiando su color de relleno
+    For Each ctl In Me.Controls
+        If ctl.ControlType = acRectangle Then
+            If ctl.Name = "sqr" & i Then
+                ctl.BackColor = vbRed
+            Else
+                ctl.BackColor = vbWhite
+            End If
+        End If
+    Next ctl
+        'Si llegamos a 5, que es el número de nuestros rectángulos, cambiamos i a cero.
+        'Si no vamos añadiendo una unidad a i
+    If i = 5 Then
+        i = 0
+    Else
+        i = i + 1
+    End If
+End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Cargar archivos masivos</h3>
+    <p class="blockquote-footer">Cargar archivos masivos</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+        Public Function Cargarclientes()
+DoCmd.OpenForm "Procesando"
+Dim Inicio As Date
+Dim Fin As Date
+Dim Tiempo As Date
+Inicio = Timer
+On Error GoTo error
+If IsNull([Forms]![Registrobasededatos]![Ciclos]) Then
+MsgBox "Debe ingresar minimo un valor mayor que 0", vbCritical, "Atención"
+Exit Function
+End If
+Dim i As Integer
+Dim j As Integer
+DoCmd.OpenForm "Procesando"
+Dim rs As DAO.Recordset
+Dim rs1 As DAO.Recordset
+Dim Rs2 As DAO.Recordset
+Dim db As DAO.Database
+Dim db1 As DAO.Database
+Dim db2 As DAO.Database
+Dim SQL As String
+Dim SQL1 As String
+Dim Archivo As String
+Dim Extension As String
+Dim Ruta As String
+Dim Filtro As String
+Dim Cedula As String
+Filtro = [Forms]![Registrobasededatos]![NombreBD]
+Set db = CurrentDb
+Set db1 = CurrentDb
+Set db2 = CurrentDb
+i = 0
+j = 0
+SQL = "SELECT Archivosconcontactabilidad.Subdir, Archivosconcontactabilidad.Archivo, Nz([ClientesBases]![Archivo],'Pendiente') AS Existe" _
+& " FROM Archivosconcontactabilidad LEFT JOIN ClientesBases ON Archivosconcontactabilidad.Archivo = ClientesBases.Archivo" _
+& " GROUP BY Archivosconcontactabilidad.Subdir, Archivosconcontactabilidad.Archivo, Nz([ClientesBases]![Archivo],'Pendiente')" _
+& " HAVING (((Archivosconcontactabilidad.Subdir) Like '*" & Filtro & "*') AND ((Nz([ClientesBases]![Archivo],'Pendiente'))='Pendiente'))"
+Set rs = db.OpenRecordset(SQL)
+rs.MoveFirst
+Do While Not rs.EOF
+Archivo = rs.Fields(1)
+Archivo = Left(Archivo, 4)
+Extension = Right(rs.Fields(1), 3)
+Ruta = rs.Fields(0)
+'''''''''''''''''''''''''ESTADOS DE CUENTA'''''''''''''''''''''''''''''''''''''
+    If Archivo = "EECC" And Extension = "txt" Then
+    Call EliminarEstadosdecuenta
+    Dim Especificacion As String
+    Especificacion = "Estadosdecuenta(Sin)"
+    DoCmd.TransferText acImportDelim, Especificacion, Left(Especificacion, Len(Especificacion) - 5), Nz(Ruta, 0), False
+    SQL1 = "SELECT DISTINCT Nz(Estadosdecuenta.CEDULA,0) AS CEDULA FROM Estadosdecuenta GROUP BY Nz(Estadosdecuenta.CEDULA,0)HAVING (((Nz(Estadosdecuenta.CEDULA,0))<>0))"
+    Set rs1 = db1.OpenRecordset(SQL1)
+        If rs1.EOF Then
+        GoTo Siguiente
+        Else
+        rs1.MoveFirst
+        Do While Not rs1.EOF
+'''''''''''''''''''''''CICLOS'''''''''''''''''''''''''
+        If j >= [Forms]![Registrobasededatos]![Ciclos] Then
+        GoTo Cerrar
+        End If
+        Cedula = rs1.Fields(0)
+            Set Rs2 = db.OpenRecordset("ClientesBases")
+            Rs2.AddNew
+            Rs2!Cedula = Cedula
+            Rs2!Ruta = Filtro
+            Rs2!Archivo = rs.Fields(1)
+            Rs2.Update
+        rs1.MoveNext
+        Loop
+        End If
+Siguiente:
+    Else
+'''''''''''''''''''''''SEGUROS VOLUNTARIOS'''''''''''''''''''''''''
+    If Archivo = "499C" And Extension = "txt" Then
+    Call Consultaborrarbasesegurosvoluntariosplano
+    Dim Especificacion1 As String
+    Especificacion1 = "BaseSegurosvoluntariosplano(Sin)"
+    DoCmd.TransferText acImportDelim, Especificacion1, Left(Especificacion1, Len(Especificacion1) - 5), Nz(Ruta, 0), False
+    SQL1 = "SELECT DISTINCT Nz(BaseSegurosvoluntariosplano.Número_identificacion,0) AS Número_identificacion FROM BaseSegurosvoluntariosplano GROUP BY Nz(BaseSegurosvoluntariosplano.Número_identificacion,0)HAVING (((Nz(BaseSegurosvoluntariosplano.Número_identificacion,0))<>0))"
+    Set rs1 = db1.OpenRecordset(SQL1)
+        If rs1.EOF Then
+        GoTo Siguiente
+        Else
+        rs1.MoveFirst
+        Do While Not rs1.EOF
+'''''''''''''''''''''''CICLOS'''''''''''''''''''''''''
+        If j >= [Forms]![Registrobasededatos]![Ciclos] Then
+        GoTo Cerrar
+        End If
+        Cedula = rs1.Fields(0)
+            Set Rs2 = db.OpenRecordset("ClientesBases")
+            Rs2.AddNew
+            Rs2!Cedula = Cedula
+            Rs2!Ruta = Filtro
+            Rs2!Archivo = rs.Fields(1)
+            Rs2.Update
+        rs1.MoveNext
+        Loop
+        End If
+''''''''''''''''''''''''''''''''''''''''''''''''
+        End If
+        End If
+        i = j + 1
+        j = i
+rs.MoveNext
+Dim Tdf As TableDef
+For Each Tdf In CurrentDb.TableDefs
+    If Right$(Tdf.Name, 20) = "ErroresDeImportación" Then
+        Debug.Print Tdf.Name
+        DoCmd.DeleteObject acTable, Tdf.Name
+    End If
+Next
+Loop
+Cerrar:
+rs1.Close
+Set rs = Nothing
+Set rs1 = Nothing
+Set Rs2 = Nothing
+db.Close
+db1.Close
+db2.Close
+Set db = Nothing
+Set db1 = Nothing
+Set db2 = Nothing
+Fin = Timer
+Tiempo = Fin - Inicio
+Tiempo = (CDbl(Tiempo) / 86400)
+MsgBox "Proceso finalizado" & vbCrLf & "Tiempo: " & Tiempo, vbCritical, "Atención"
+Exit Function
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
+error:
+If Err = 3021 Then
+GoTo Siguiente
+End If
+If Err = 91 Then
+GoTo Siguiente
+End If
+If Err = 3011 Then
+GoTo Siguiente
+End If
+If Err = 3265 Then
+GoTo Siguiente
+End If
+If Err = 3464 Then
+GoTo Siguiente
+End If
+If Err = 7874 Then
+GoTo Siguiente
+End If
+DoCmd.Close acForm, "procesando", acSaveNo
+MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+End Function
+
+Public Function Cantidadclientes()
+On Error GoTo error
+Dim SQL As String, Lista As String
+Dim db As DAO.Database
+Dim Cantidad As String
+Dim qdef As DAO.QueryDef
+Set db = CurrentDb
+SQL = "SELECT ClientesBases.Cedula, ClientesBases.Ruta From ClientesBases Where Ruta Like '*' & [Forms]![Registrobasededatos]![NombreBD] & '*'"
+Set qdef = db.CreateQueryDef("CantidadClientesBases", SQL)
+Cantidad = DCount("[Cedula]", "CantidadClientesBases")
+If Cantidad = 0 Then
+MsgBox "No hay registros cargados", vbCritical, "Atención"
+db.QueryDefs.Delete "CantidadClientesBases"
+Else
+MsgBox "Resumen Clientes:" & vbCrLf & vbCrLf & Cantidad, vbInformation, "Resumen Incoming proveedor"
+[Forms]![Registrobasededatos]![Titulares] = Cantidad
+End If
+db.QueryDefs.Delete "CantidadClientesBases"
+qdef.Close
+db.Close
+Set qdef = Nothing
+Set db = Nothing
+Exit Function
+error:
+MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+End Function
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Ocultar objetos base de datos</h3>
+    <p class="blockquote-footer">Ocultar objetos de la base de datos</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+        Sub OcultarObjetos()
+Dim i As Integer
+Dim b As Boolean
+Dim Tdf As TableDef
+Dim qdf As QueryDef
+
+b = True
+
+'Formularios
+For i = 0 To CurrentProject.AllForms.Count - 1
+If UCase(Left(CurrentProject.AllForms(i).Name, 4)) <> "USYS" Then
+Application.SetHiddenAttribute acForm, CurrentProject.AllForms(i).Name, b
+End If
+Next
+
+'Informes
+For i = 0 To CurrentProject.AllReports.Count - 1
+If UCase(Left(CurrentProject.AllReports(i).Name, 4)) <> "USYS" Then
+Application.SetHiddenAttribute acReport, CurrentProject.AllReports(i).Name, b
+End If
+Next
+
+'Módulos VBA
+For i = 0 To CurrentProject.AllModules.Count - 1
+If UCase(Left(CurrentProject.AllModules(i).Name, 4)) <> "USYS" Then
+Application.SetHiddenAttribute acModule, CurrentProject.AllModules(i).Name, b
+End If
+Next
+
+'Macros
+For i = 0 To CurrentProject.AllMacros.Count - 1
+If UCase(Left(CurrentProject.AllMacros(i).Name, 4)) <> "USYS" Then
+Application.SetHiddenAttribute acMacro, CurrentProject.AllMacros(i).Name, b
+End If
+Next
+
+'Páginas de datos
+'For i = 0 To CurrentProject.AllDataAccessPages.Count - 1
+'If UCase(Left(CurrentProject.AllDataAccessPages(i).Name, 4)) <>
+'"USYS" Then
+'Application.SetHiddenAttribute acDataAccessPage,
+'CurrentProject.AllDataAccessPages(i).Name , b
+'End If
+'Next
+
+'Tablas
+For Each Tdf In CurrentDb.TableDefs
+If UCase(Left(Tdf.Name, 4)) <> "MSYS" Then
+If UCase(Left(Tdf.Name, 4)) <> "USYS" Then
+If (Tdf.Attributes And dbSystemObject) <> dbSystemObject Then
+Application.SetHiddenAttribute acTable, Tdf.Name, b
+End If
+End If
+End If
+Next
+
+'Consultas
+For Each qdf In CurrentDb.QueryDefs
+If UCase(Left(qdf.Name, 4)) <> "MSYS" Then
+If UCase(Left(qdf.Name, 4)) <> "USYS" Then
+If Left(qdf.Name, 1) <> "~" Then
+Application.SetHiddenAttribute acQuery, qdf.Name, b
+End If
+End If
+End If
+Next
+End Sub
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas resumen base de datos</h3>
+    <p class="blockquote-footer">consultas resumen base de datos</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+        Public Const miRutaBD As String = "\\PRCRE_10000826\Users\Public\Documents\Tablas operaciones" & "\"
+        Public Const equivGB As Long = 1024000
+
+        Public Function ConsultaresumenTarjetasactivas()
+On Error GoTo error
+DoCmd.OpenForm "Procesando"
+Dim SQL As String, Lista As String
+Dim qdef As DAO.QueryDef
+Dim rst As DAO.Recordset
+SQL = "SELECT Max(CDate(Nz([Tarjetasactivas]![FECHA_TRANSACCION],0))) AS FECHA_TRANSACCION FROM Tarjetasactivas"
+Set qdef = CurrentDb.CreateQueryDef("")
+qdef.SQL = SQL
+Set rst = qdef.OpenRecordset(dbOpenForwardOnly)
+With rst
+Do Until .EOF
+Lista = Lista & .Fields(0) & vbTab
+.MoveNext
+Loop
+End With
+Dim SQL1 As String, Lista1 As String
+Dim qdef1 As DAO.QueryDef
+Dim rst1 As DAO.Recordset
+SQL1 = "SELECT Count(Tarjetasactivas.CUENTA) AS Cuenta FROM Tarjetasactivas"
+Set qdef1 = CurrentDb.CreateQueryDef("")
+qdef1.SQL = SQL1
+Set rst1 = qdef1.OpenRecordset(dbOpenForwardOnly)
+With rst1
+Do Until .EOF
+Lista1 = Lista1 & .Fields(0) & vbTab
+.MoveNext
+Loop
+End With
+If Lista1 = 0 Then
+MsgBox "No hay registros cargados", vbCritical, "Atención"
+Else
+Dim Cantidad As String
+Cantidad = DCount("[CUENTA]", "Tarjetasactivas")
+If Cantidad = 0 Then
+MsgBox "No hay registros cargados", vbCritical, "Atención"
+Else
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Dim fso As Scripting.FileSystemObject
+Dim fsf As Scripting.File
+Dim TamanoBD As Double
+Dim miBD As String
+Dim tamanoLimite As Double
+miBD = "Tarjetasactivadas.accdb"
+miBD = miRutaBD & miBD
+Set fso = CreateObject("Scripting.filesystemobject")
+Set fsf = fso.GetFile(miBD)
+TamanoBD = fsf.Size
+TamanoBD = TamanoBD / equivGB
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+MsgBox "Movimiento tarjetas:" & vbTab & vbCrLf & "Último movimiento : " & vbTab & Lista & vbTab & "Cantidad :" & vbTab & vbTab & vbTab & Lista1 & vbTab & vbCrLf & "Tamaño Tabla: " & TamanoBD & " MB." & vbCrLf & "Cuando la tabla supere las 1.8 GB" & vbCrLf & "se debe compactar y reparar", vbInformation, "Resumen tarjetas activas"
+End If
+End If
+Set fso = Nothing
+Set fsf = Nothing
+rst.Close
+qdef.Close
+Set rst = Nothing
+Set qdef = Nothing
+rst1.Close
+qdef1.Close
+Set rst1 = Nothing
+Set qdef1 = Nothing
+DoCmd.Close acForm, "procesando", acSaveNo
+Exit Function
+error:
+DoCmd.Close acForm, "procesando", acSaveNo
+MsgBox "Error n° " & Err.Number & " " & Err.Description & " " & Err.Source, vbCritical, "Atención"
+End Function
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Buscar y cargar archivos de texto</h3>
+    <p class="blockquote-footer">Buscar y cargar archivos de texto</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+        Public Function fncBuscoCarpeta() As String
+    Dim fDialog As Office.FileDialog
+    Set fDialog = Application.FileDialog(msoFileDialogFolderPicker)
+    With fDialog
+        .AllowMultiSelect = False
+        .ButtonName = "Seleccionar"
+        .title = "Seleccionar la carpeta base"
+        .InitialFileName = Application.CurrentProject.Path
+        .InitialView = msoFileDialogViewDetails
+        If .Show = True Then
+            fncBuscoCarpeta = .SelectedItems(1)
+        Else
+            MsgBox "Ha cancelado la selección de la carpeta base", vbExclamation, "AVISO"
+        End If
+    End With
+End Function
+
+Public Sub rellenoTBase(rutaBase As String, misTags As String)
+    Dim vIdBase As Long
+    Dim miSql As String
+    miSql = "INSERT INTO TBase(DirBase,Tags) VALUES ('" & rutaBase & "', '" _
+            & misTags & "')"
+    DoCmd.SetWarnings False 'Desactivamos las alertas
+    DoCmd.RunSQL (miSql)
+    DoCmd.SetWarnings True 'Reactivamos las alertas
+    vIdBase = DLookup("Id", "TBase", "DirBase='" & rutaBase & "'")
+    Call rellenoTArchivos(rutaBase, vIdBase)
+End Sub
+Public Sub rellenoTArchivos(miRutaBase As String, ByVal miIdBase As Long)
+
+On Error GoTo sol_err
+        'Declaramos las variables
+    Dim fso As Object 'fso = FileSystemObject
+    Dim fsc As Object 'fsc = FileSystem Carpeta
+    Dim fssc As Object 'fssc = FileSystem SubCarpeta
+    Dim fsa As Object 'fsa = FileSystem Archivo
+    Dim fsas As Object 'fsas = FileSystem ArchivoS
+    Dim rst As DAO.Recordset
+        'Creamos un recordset sobre la tabla TArchivos
+    Set rst = CurrentDb.OpenRecordset("TArchivos")
+        'Creamos una instancia del fso
+    Set fso = CreateObject("Scripting.FileSystemObject")
+        'Creamos la instancia de la carpeta cogida como ruta base
+    Set fsc = fso.GetFolder(miRutaBase)
+        'Creamos la instancia de los archivos
+    Set fsas = fsc.Files
+        'Recorremos los archivos de dentro de la carpeta y los vamos escribiendo en la TArchivos
+    For Each fsa In fsas
+    
+            rst.AddNew
+            rst!IdBase = miIdBase
+            rst!SubDir = miRutaBase & "\" & fsa.Name
+            rst!Archivo = fsa.Name
+            rst.Update
+            
+    Next fsa
+        'Recorremos las subcarpetas que haya en la ruta base
+    For Each fssc In fsc.SubFolders
+            'Hacemos una llamada recurrente al propio procedimiento
+        rellenoTArchivos miRutaBase & "\" & fssc.Name, miIdBase
+    Next fssc
+        'Cerramos conexiones y liberamos memoria
+    rst.Close
+    Set rst = Nothing
+    Exit Sub
+sol_err:
+    If Err.Number = 76 Then 'La ruta indicada no existe
+            'Lanzamos mensaje de advertencia
+        MsgBox "La ruta especificada no existe", vbCritical, "ERROR"
+            'Borramos el registro que se había creado en TBase
+        DoCmd.SetWarnings False
+        DoCmd.RunSQL ("DELETE FROM TBase WHERE TBase.Id=" & miIdBase)
+        DoCmd.SetWarnings True
+            'Indicamos que hay error
+        Nohayerrores = False
+    End If
+End Sub
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Buscar archivo</h3>
+    <p class="blockquote-footer">Buscar archivo</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+Private Sub Buscar_Click()
+Me.Ubicacion.Value = Buscarcarpeta()
+End Sub
+
+        Public Function Buscarcarpeta() As String
+Dim Cuadrodebusqueda As Office.FileDialog
+Set Cuadrodebusqueda = Application.FileDialog(msoFileDialogFilePicker)
+With Cuadrodebusqueda
+.AllowMultiSelect = False
+.ButtonName = "Seleccionar"
+.title = "Seleccione un archivo"
+.InitialFileName = "C:\Users\aguevara\Downloads\"
+.InitialView = msoFileDialogViewDetails
+If .Show = True Then
+Buscarcarpeta = .SelectedItems(1)
+Else
+MsgBox "Ha cancelado la selección del archivo", vbExclamation, "AVISO"
+End If
+End With
+End Function
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
+  <div class="container">
+    <h3>Consultas</h3>
+    <p class="blockquote-footer">consultas</p>
+  <div class="container text-left">
+    <div class="row"  id="ConsultasSQL">
+    <pre><code>
+
+     </pre></code>
+  </div></div></div>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
